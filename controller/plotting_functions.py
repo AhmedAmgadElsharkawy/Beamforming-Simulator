@@ -1,8 +1,10 @@
 import numpy as np
 
 def plot_beam_pattern(ax, params):
-    ax.clear()
-    
+    if not hasattr(ax, '_has_data'):
+            ax.clear()
+            ax._has_data = True
+        
     elements = params['elements']
     spacing = params['spacing']
     steering = params['steering']
@@ -13,13 +15,19 @@ def plot_beam_pattern(ax, params):
     
     for n in range(elements):
         array_factor += np.exp(1j * (2 * np.pi * spacing * n * np.sin(theta) + 
-                               np.deg2rad(steering) + np.deg2rad(phase)))
+                                    np.deg2rad(steering) + np.deg2rad(phase)))
     
-    array_factor = np.abs(array_factor) / elements
+    array_factor = 20 * np.log10(np.abs(array_factor) / np.max(np.abs(array_factor)))
+    array_factor[array_factor < -50] = -50
     
-    ax.plot(theta, array_factor)
-    ax.set_title('Beam Pattern',color='white',pad = -15)
-    ax.grid(True)
+    ax.plot(theta, array_factor, color='blue')
+    ax.set_theta_zero_location('N')
+    ax.set_theta_direction(-1)
+    ax.set_rticks([-50, -40, -30, -20, -10, 0])
+    ax.set_thetagrids(range(0, 360, 45), labels=['0°', '45°', '90°', '135°', '180°', '225°', '270°', '315°'])
+    ax.set_title('Beam Pattern', color='white', pad=-20)
+    ax.grid(True, color='gray', linestyle='--', linewidth=0.5)
+
 
 def plot_top_xy(ax, params):
     ax.clear()

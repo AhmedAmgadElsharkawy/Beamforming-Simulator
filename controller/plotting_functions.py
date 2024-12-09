@@ -18,7 +18,7 @@ def plot_beam_pattern(ax, params):
     array_factor = np.abs(array_factor) / elements
     
     ax.plot(theta, array_factor)
-    ax.set_title('Beam Pattern')
+    ax.set_title('Beam Pattern',color='white',pad = -15)
     ax.grid(True)
 
 def plot_top_xy(ax, params):
@@ -46,7 +46,7 @@ def plot_top_xy(ax, params):
         y_elements = radius * (1 - np.cos(theta)) + y_pos
     
     ax.scatter(x_elements, y_elements, c='blue', marker='o')
-    ax.set_title('Array Configuration')
+    ax.set_title('Array Configuration',color='white')
     ax.grid(True)
     ax.set_aspect('equal')
 
@@ -70,7 +70,7 @@ def plot_interference(ax, params):
         Z += np.cos(2 * np.pi * R / wavelength)
     
     ax.imshow(Z, extent=[-10, 10, -10, 10], origin='lower')
-    ax.set_title('Interference Pattern')
+    ax.set_title('Interference Pattern',color='white')
     ax.grid(True)
 
 def plot_bottom_xy(ax, params):

@@ -93,7 +93,7 @@ def plot_bottom_xy(ax, params):
     ax.arrow(x_pos, y_pos, length*dx, length*dy, 
              head_width=0.3, head_length=0.5, fc='red', ec='red')
     
-    ax.set_title('Array Position and Beam Direction')
+    ax.set_title('Array Position and Beam Direction',color='white')
     ax.grid(True)
     ax.set_aspect('equal')
     ax.set_xlim(-10, 10)

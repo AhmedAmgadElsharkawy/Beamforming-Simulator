@@ -1,6 +1,4 @@
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
 
 class SavedScenario(QFrame):
     def __init__(self, parent=None, scenario_data=None, on_delete=None, on_visibility_toggle=None, is_visible=False):
@@ -18,12 +16,10 @@ class SavedScenario(QFrame):
         self.on_visibility_toggle = on_visibility_toggle
         self.scenario_data = scenario_data
         
-        # Main layout
         layout = QHBoxLayout(self)
         layout.setSpacing(4)
         layout.setContentsMargins(4, 4, 4, 4)
         
-        # Scenario name
         name_label = QLabel(f"Scenario {scenario_data['id']}")
         name_label.setStyleSheet("""
             font-weight: bold;
@@ -33,7 +29,6 @@ class SavedScenario(QFrame):
         """)
         layout.addWidget(name_label)
         
-        # Visibility toggle button
         self.visibility_btn = QPushButton("👁‍🗨" if self.visible else "🚫")
         self.visibility_btn.setStyleSheet("""
             QPushButton {
@@ -49,10 +44,9 @@ class SavedScenario(QFrame):
                 background-color: #1D4ED8;
             }
         """)
-        self.visibility_btn.clicked.connect(self.toggle_visibility)  # Corrected method name
+        self.visibility_btn.clicked.connect(self.toggle_visibility)
         layout.addWidget(self.visibility_btn)
         
-        # Delete button
         delete_btn = QPushButton("❌")
         delete_btn.setStyleSheet("""
             QPushButton {

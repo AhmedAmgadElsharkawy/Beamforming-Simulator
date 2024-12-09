@@ -22,6 +22,3 @@ class ControlParameters:
             "x_position": self.x_position,
             "y_position": self.y_position,
         }
-
-# Instantiate the control parameters globally
-parameters = ControlParameters()

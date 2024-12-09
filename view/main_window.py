@@ -132,6 +132,8 @@ class BeamformingSimulator(QMainWindow):
         self.curvature.setValue(1.0)
         self.curvature.setSingleStep(0.1)
         self.curvature.valueChanged.connect(self.update_plots)
+        self.array_type.currentTextChanged.connect(self.handle_array_type_change)  
+        self.handle_array_type_change(self.array_type.currentText())
         current_unit_layout.addWidget(self.curvature, 5, 1)
 
         # Frequency
@@ -207,6 +209,12 @@ class BeamformingSimulator(QMainWindow):
 
         # Initial plot update
         self.update_plots()
+
+    def handle_array_type_change(self, array_type):
+        if array_type == "Linear":
+            self.curvature.setDisabled(True)
+        else:
+            self.curvature.setEnabled(True)
 
     def update_plots(self):
         if self.active_scenario_id is None:

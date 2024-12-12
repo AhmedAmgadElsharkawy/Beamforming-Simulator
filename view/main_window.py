@@ -12,9 +12,9 @@ from view.saved_unit import SavedUnit
 from view.saved_scenarios import SavedScenario
 from controller.plotting_functions import (
     plot_beam_pattern,
-    plot_top_xy,
+    plot_array_geometry,
     plot_interference,
-    plot_bottom_xy
+    plot_rectangular_beam
 )
 
 class BeamformingSimulator(QMainWindow):
@@ -25,8 +25,11 @@ class BeamformingSimulator(QMainWindow):
         self.scenarios = []
         self.active_scenario = None
         self.active_scenario_id = None
+        self.selected_arrays = {}  # Track selected arrays
+        self.array_checkboxes = {}  # Track checkboxes
         self.setup_ui()
         self.apply_stylesheet()
+
 
     def setup_ui(self):
         main_widget = QWidget()
@@ -117,13 +120,13 @@ class BeamformingSimulator(QMainWindow):
         self.steering.valueChanged.connect(self.update_plots)
         current_unit_layout.addWidget(self.steering, 3, 1)
 
-        # Phase
-        current_unit_layout.addWidget(QLabel("Phase (°):"), 4, 0)
-        self.phase = QDoubleSpinBox()
-        self.phase.setRange(-360, 360)
-        self.phase.setValue(0)
-        self.phase.valueChanged.connect(self.update_plots)
-        current_unit_layout.addWidget(self.phase, 4, 1)
+        # # Phase
+        # current_unit_layout.addWidget(QLabel("Phase (°):"), 4, 0)
+        # self.phase = QDoubleSpinBox()
+        # self.phase.setRange(-360, 360)
+        # self.phase.setValue(0)
+        # self.phase.valueChanged.connect(self.update_plots)
+        # current_unit_layout.addWidget(self.phase, 4, 1)
 
         # Curvature Factor
         current_unit_layout.addWidget(QLabel("Curvature:"), 5, 0)
@@ -213,47 +216,50 @@ class BeamformingSimulator(QMainWindow):
             self.update_patterns_with_units([])
 
     def update_patterns_with_units(self, units):
-        # Clear previous plots
         self.clear_patterns()
         
-        # If we have units in a scenario, plot each unit
         if units:
+            params_list = []
             for unit in units:
-                params = ControlParameters()
-                params.array_type = unit['type']
-                params.elements = unit['elements']
-                params.spacing = unit['spacing']
-                params.steering = unit['steering']
-                params.phase = unit['phase']
-                params.curvature = unit['curvature']
-                params.frequency = unit['frequency']
-                params.x_position = unit['x_position']
-                params.y_position = unit['y_position']
-
-                # Plot each unit's contribution
-                plot_beam_pattern(self.beam_ax, params.get_parameters())
-                plot_top_xy(self.top_xy_ax, params.get_parameters())
-                plot_interference(self.interference_ax, params.get_parameters())
-                plot_bottom_xy(self.bottom_xy_ax, params)
+                params_dict = {
+                    'elements': unit['elements'],
+                    'spacing': unit['spacing'],
+                    'steering': np.deg2rad(unit['steering']),
+                    'array_type': unit['type'],
+                    'curvature': unit['curvature'],
+                    'frequency': unit['frequency'],
+                    'x_position': unit['x_position'],
+                    'y_position': unit['y_position'],
+                    'phase': unit['phase'],
+                    'id': unit['id']
+                }
+                params_list.append(params_dict)
+            
+            if params_list:
+                plot_beam_pattern(self.beam_ax, params_list)
+                plot_array_geometry(self.top_xy_ax, params_list)
+                plot_interference(self.interference_ax, params_list)
+                plot_rectangular_beam(self.bottom_xy_ax, params_list)
         else:
-            # If no units, plot current control values
-            params = ControlParameters()
-            params.array_type = self.array_type.currentText()
-            params.elements = self.elements.value()
-            params.spacing = self.spacing.value()
-            params.steering = self.steering.value()
-            params.phase = self.phase.value()
-            params.curvature = self.curvature.value()
-            params.frequency = self.frequency.value()
-            params.x_position = self.x_position.value()
-            params.y_position = self.y_position.value()
-
-            plot_beam_pattern(self.beam_ax, params.get_parameters())
-            plot_top_xy(self.top_xy_ax, params.get_parameters())
-            plot_interference(self.interference_ax, params.get_parameters())
-            plot_bottom_xy(self.bottom_xy_ax, params)
+            # Single unit case
+            params_dict = {
+                'elements': self.elements.value(),
+                'spacing': self.spacing.value(),
+                'steering': np.deg2rad(self.steering.value()),
+                'array_type': self.array_type.currentText().lower(),
+                'curvature': self.curvature.value(),
+                'frequency': self.frequency.value(),
+                'x_position': self.x_position.value(),
+                'y_position': self.y_position.value(),
+                # 'phase': self.phase.value()  # Added phase parameter
+            }
+            plot_beam_pattern(self.beam_ax, [params_dict])
+            plot_array_geometry(self.top_xy_ax, [params_dict])
+            plot_interference(self.interference_ax, [params_dict])
+            plot_rectangular_beam(self.bottom_xy_ax, [params_dict])
         
         self.refresh_canvases()
+
 
 
     def refresh_canvases(self):
@@ -400,20 +406,27 @@ class BeamformingSimulator(QMainWindow):
 """)
 
     def save_current_unit(self):
+        # Generate new ID based on highest existing ID + 1
+        new_id = max([unit['id'] for unit in self.saved_units], default=0) + 1
+        
         unit_data = {
-            'id': len(self.saved_units) + 1,
+            'id': new_id,
             'type': self.array_type.currentText().lower(),
             'elements': self.elements.value(),
             'spacing': self.spacing.value(),
             'steering': self.steering.value(),
-            'phase': self.phase.value(),
+            'phase': 0,
             'curvature': self.curvature.value(),
             'frequency': self.frequency.value(),
             'x_position': self.x_position.value(),
             'y_position': self.y_position.value()
         }
         self.saved_units.append(unit_data)
+        self.selected_arrays[new_id] = True
         self.update_saved_units_display()
+        self.update_patterns_with_units(self.saved_units)
+
+
 
     def save_scenario(self):
         if not self.saved_units:
@@ -434,6 +447,25 @@ class BeamformingSimulator(QMainWindow):
         # Automatically show the newly created scenario
         self.toggle_scenario_visibility(scenario_data['id'], True)
 
+    def show_unit(self, unit_data):
+        # Update control panel with unit parameters
+        self.array_type.setCurrentText(unit_data['type'].capitalize())
+        self.elements.setValue(unit_data['elements'])
+        self.spacing.setValue(unit_data['spacing'])
+        self.steering.setValue(unit_data['steering'])
+        self.phase.setValue(unit_data['phase'])
+        self.curvature.setValue(unit_data['curvature'])
+        self.frequency.setValue(unit_data['frequency'])
+        self.x_position.setValue(unit_data['x_position'])
+        self.y_position.setValue(unit_data['y_position'])
+        
+        # Update plots with just this unit
+        self.update_patterns_with_units([unit_data])
+
+    def toggle_unit_visibility(self, unit_id, is_visible):
+        self.selected_arrays[unit_id] = is_visible
+        self.update_patterns_with_units(self.saved_units)
+
     def update_saved_units_display(self):
         while self.saved_units_layout.count():
             child = self.saved_units_layout.takeAt(0)
@@ -443,10 +475,24 @@ class BeamformingSimulator(QMainWindow):
         for unit_data in self.saved_units:
             unit_widget = SavedUnit(
                 unit_data=unit_data,
-                on_delete=self.delete_unit
+                on_delete=self.delete_unit,
+                on_edit=self.edit_unit,
+                on_visibility_change=self.toggle_unit_visibility
             )
             self.saved_units_layout.addWidget(unit_widget)
 
+
+    
+    def edit_unit(self, updated_unit_data):
+        # Update the unit in saved_units
+        for i, unit in enumerate(self.saved_units):
+            if unit['id'] == updated_unit_data['id']:
+                self.saved_units[i].update(updated_unit_data)
+                break
+        
+        # Update plots with modified units
+        self.update_patterns_with_units(self.saved_units)
+        
     def update_scenarios_display(self):
         while self.scenarios_layout.count():
             child = self.scenarios_layout.takeAt(0)
@@ -463,8 +509,27 @@ class BeamformingSimulator(QMainWindow):
             self.scenarios_layout.addWidget(scenario_widget)
 
     def delete_unit(self, unit_id):
+        # Remove the unit from saved units
         self.saved_units = [u for u in self.saved_units if u['id'] != unit_id]
+        
+        # Remove from selection tracking
+        if unit_id in self.selected_arrays:
+            del self.selected_arrays[unit_id]
+            
+        # Clear all plots first
+        self.clear_patterns()
+        
+        # If there are remaining units, recalculate with them
+        if self.saved_units:
+            self.update_patterns_with_units(self.saved_units)
+        else:
+            # If no units left, update with current control values
+            self.update_plots()
+            
+        # Update the UI
         self.update_saved_units_display()
+
+
 
     def delete_scenario(self, scenario_id):
         if self.active_scenario_id == scenario_id:

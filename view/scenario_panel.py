@@ -1,7 +1,8 @@
-from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy
+from PyQt5.QtCore import Qt
 
 class ScenarioPanel(QFrame):
-    """Panel for managing and displaying scenarios"""
+    """Panel for managing and displaying scenarios with proper icon alignment"""
     
     def __init__(self, scenario_data, on_delete=None, on_visibility_toggle=None, is_visible=False):
         super().__init__()
@@ -12,29 +13,52 @@ class ScenarioPanel(QFrame):
         self._apply_styles()
 
     def _init_ui(self, on_delete):
-        # Use single layout
-        self.setLayout(QHBoxLayout())
-        layout = self.layout()
-        layout.setSpacing(4)
-        layout.setContentsMargins(4, 4, 4, 4)
+        # Main horizontal layout
+        main_layout = QHBoxLayout()
+        main_layout.setContentsMargins(10, 5, 10, 5)
+        main_layout.setSpacing(8)
+        self.setLayout(main_layout)
         
-        # Display meaningful scenario name
+        # Name label with ellipsis for long text
         name = self.scenario_data.get('name', f'Scenario {self.scenario_data["id"]}')
         name_label = QLabel(name)
-        layout.addWidget(name_label)
+        name_label.setWordWrap(False)  # Prevent wrapping
+        name_label.setMaximumWidth(150)  # Limit width
+        name_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        name_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         
-        # Visibility toggle button with proper callback
+        # Enable eliding for long text
+        name_label.setTextFormat(Qt.PlainText)
+        metrics = name_label.fontMetrics()
+        elidedText = metrics.elidedText(name, Qt.ElideRight, name_label.maximumWidth())
+        name_label.setText(elidedText)
+        
+        # Add name to layout
+        main_layout.addWidget(name_label)
+        
+        # Add stretch to push buttons to the right
+        main_layout.addStretch()
+        
+        # Container for buttons to keep them together
+        button_layout = QHBoxLayout()
+        button_layout.setSpacing(4)  # Small gap between buttons
+        
+        # Visibility toggle button
         self.visibility_btn = QPushButton("👁" if self.visible else "🚫")
+        self.visibility_btn.setFixedSize(24, 24)  # Fixed size for consistency
         self.visibility_btn.clicked.connect(self._toggle_visibility)
-        layout.addWidget(self.visibility_btn)
+        button_layout.addWidget(self.visibility_btn)
         
-        # Delete button with proper callback
+        # Delete button
         if on_delete:
             delete_btn = QPushButton("❌")
+            delete_btn.setFixedSize(24, 24)  # Fixed size for consistency
             delete_btn.clicked.connect(lambda: on_delete(self.scenario_data['id']))
-            layout.addWidget(delete_btn)
+            delete_btn.setProperty('delete', True)  # For styling
+            button_layout.addWidget(delete_btn)
         
-        layout.addStretch()
+        # Add button layout to main layout
+        main_layout.addLayout(button_layout)
 
     def _toggle_visibility(self):
         if self.on_visibility_toggle:
@@ -53,17 +77,16 @@ class ScenarioPanel(QFrame):
             QLabel {
                 font-weight: bold;
                 color: white;
-                font-size: 8pt;
+                font-size: 9pt;
                 padding: 2px;
             }
             QPushButton {
                 background-color: #2563EB;
                 color: white;
-                font-size: 8pt;
-                padding: 2px 4px;
-                min-width: 20px;
-                max-width: 20px;
-                height: 16px;
+                font-size: 10pt;
+                border-radius: 4px;
+                margin: 0px;
+                padding: 0px;
             }
             QPushButton[delete=true] {
                 background-color: #DC2626;

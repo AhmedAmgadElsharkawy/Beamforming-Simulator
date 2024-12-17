@@ -164,9 +164,10 @@ class BeamformingSimulator(QMainWindow):
         layout.addWidget(scroll)
         
         # Add Scenario Button
-        add_scenario_btn = QPushButton("Add Scenario")
-        add_scenario_btn.clicked.connect(self._save_scenario)
-        layout.addWidget(add_scenario_btn)
+        self.add_scenario_btn = QPushButton("Add Scenario")
+        self.add_scenario_btn.clicked.connect(self._save_scenario)
+        self.add_scenario_btn.setEnabled(False)  # Initially disabled
+        layout.addWidget(self.add_scenario_btn)
         
         return layout
 
@@ -248,7 +249,7 @@ class BeamformingSimulator(QMainWindow):
                 on_visibility_change=self.array_controller.toggle_array_visibility
             )
             self.saved_units_layout.addWidget(unit_widget)
-            
+        self.add_scenario_btn.setEnabled(len(self.array_controller.arrays) > 0)   
         # Force refresh of the layout
         self.saved_units_layout.update()
 

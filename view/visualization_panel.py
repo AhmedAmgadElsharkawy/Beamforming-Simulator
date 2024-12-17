@@ -48,7 +48,7 @@ class VisualizationPanel(QWidget):
         self.interference_figure = plt.figure(figsize=(6, 3), facecolor='#111827')
         self.interference_canvas = FigureCanvas(self.interference_figure)
         self.interference_ax = self.interference_figure.add_subplot(111)
-        self.interference_figure.subplots_adjust(left=0.05, right=0.97, top=0.88, bottom=0.05)
+        self.interference_figure.subplots_adjust(left=0.05, right=0.97, top=0.86, bottom=0.05)
         self._configure_plot(self.interference_ax)
         self.layout.addWidget(self.interference_canvas, 1, 1)
 

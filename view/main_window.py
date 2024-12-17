@@ -383,6 +383,31 @@ class BeamformingSimulator(QMainWindow):
                 background-color: #1E40AF;
                 border-radius: 4px;
             }
+            
+            QPushButton:disabled {
+            background-color: #374151;
+            color: #6B7280;
+            border: 1px solid #4B5563;
+            }
+
+            QPushButton#add_scenario_btn {
+                min-width: 120px;
+                font-weight: bold;
+            }
+
+            
+            QPushButton#add_scenario_btn:disabled {
+                background-color: #1F2937;
+                color: #4B5563;
+                border: 1px dashed #4B5563;
+                opacity: 0.7;
+            }
+
+            
+            QPushButton#add_scenario_btn:hover:!disabled {
+                background-color: #1D4ED8;
+                transform: translateY(-1px);
+            }
 
             QScrollArea {
                 border: none;

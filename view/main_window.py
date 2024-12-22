@@ -1,77 +1,91 @@
 from PyQt5.QtWidgets import QMainWindow, QWidget, QHBoxLayout
 from PyQt5.QtCore import Qt
-import numpy as np
+from dataclasses import dataclass
 from controller.visualization_controller import VisualizationController
-from view.visualization_panel import VisualizationPanel
-from view.control_panel import ControlPanel
+from .visualization_panel import VisualizationPanel
+from .parameter_panel import ParameterPanel
+
+@dataclass
+class SimulationParameters:
+    elements: float
+    spacing: float
+    steering: float
+    array_type: str
+    curvature: float
+    frequency: float
+    x_position: float
+    y_position: float
+    phase: float = 0
 
 class BeamformingSimulator(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("2D Beamforming Simulator")
-        
-        # Initialize visualization components
-        self.visualization_panel = VisualizationPanel()
-        self.visualization_controller = VisualizationController()
-        
-        # Setup UI
-        self._init_ui()
-        self._apply_stylesheet()
+        self._init_components()
+        self._setup_ui()
+        self._connect_signals()
+        self._apply_styling()
         self.update_plots()
 
-    def _init_ui(self):
+    def _init_components(self):
+        self.visualization_panel = VisualizationPanel()
+        self.visualization_controller = VisualizationController()
+        self.parameter_panel = ParameterPanel()
+
+    def _setup_ui(self):
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
         layout = QHBoxLayout(main_widget)
-        
-        # Setup visualization panel
         layout.addWidget(self.visualization_panel, stretch=2)
-        
-        # Setup control panel
-        self.control_panel = ControlPanel()
-        layout.addWidget(self.control_panel, stretch=1)
-        
-        # Connect signals
-        self.control_panel.array_type.currentTextChanged.connect(self._toggle_parameters)
-        for slider in [
-            self.control_panel.elements,
-            self.control_panel.spacing,
-            self.control_panel.steering,
-            self.control_panel.curvature,
-            self.control_panel.frequency,
-            self.control_panel.x_position,
-            self.control_panel.y_position
-        ]:
+        layout.addWidget(self.parameter_panel, stretch=1)
+
+    def _connect_signals(self):
+        self.parameter_panel.array_type.currentTextChanged.connect(self._toggle_parameters)
+        self._connect_slider_signals()
+
+    def _connect_slider_signals(self):
+        sliders = [
+            self.parameter_panel.elements,
+            self.parameter_panel.spacing,
+            self.parameter_panel.steering,
+            self.parameter_panel.curvature,
+            self.parameter_panel.frequency,
+            self.parameter_panel.x_position,
+            self.parameter_panel.y_position
+        ]
+        for slider in sliders:
             slider.slider.valueChanged.connect(self.update_plots)
 
-    def _toggle_parameters(self, array_type):
+    def _toggle_parameters(self, array_type: str):
         is_curved = array_type == "Curved"
-        self.control_panel.curvature.setEnabled(is_curved)
-        self.control_panel.spacing.setEnabled(not is_curved)
+        self.parameter_panel.curvature.setEnabled(is_curved)
+        self.parameter_panel.spacing.setEnabled(not is_curved)
         self.update_plots()
 
     def update_plots(self):
-        params = {
-            'elements': self.control_panel.elements.value(),
-            'spacing': self.control_panel.spacing.value(),
-            'steering': self.control_panel.steering.value(),
-            'array_type': self.control_panel.array_type.currentText().lower(),
-            'curvature': self.control_panel.curvature.value(),
-            'frequency': self.control_panel.frequency.value(),
-            'x_position': self.control_panel.x_position.value(),
-            'y_position': self.control_panel.y_position.value(),
-            'phase': 0
-        }
+        params = SimulationParameters(
+            elements=self.parameter_panel.elements.value(),
+            spacing=self.parameter_panel.spacing.value(),
+            steering=self.parameter_panel.steering.value(),
+            array_type=self.parameter_panel.array_type.currentText().lower(),
+            curvature=self.parameter_panel.curvature.value(),
+            frequency=self.parameter_panel.frequency.value(),
+            x_position=self.parameter_panel.x_position.value(),
+            y_position=self.parameter_panel.y_position.value(),
+            phase=0
+        )
         
+        self._update_visualization(params)
+
+    def _update_visualization(self, params: SimulationParameters):
         self.visualization_panel.clear_all_plots()
-        self.visualization_panel.update_plots([params], self.visualization_controller)
+        self.visualization_panel.update_plots([vars(params)], self.visualization_controller)
         self.visualization_panel.refresh_all_canvases()
 
-    def _apply_stylesheet(self):
+    def _apply_styling(self):
         self.setStyleSheet("""
             QMainWindow {
                 background-color: #111827;
                 font-family: 'Arial', sans-serif;
             }
         """)
-

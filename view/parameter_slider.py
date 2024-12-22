@@ -1,32 +1,73 @@
+from dataclasses import dataclass
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QSlider
 from PyQt5.QtCore import Qt
 
-class ParameterSlider(QWidget):
-    def __init__(self, label, min_val, max_val, default_val, step=1, parent=None):
-        super().__init__(parent)
-        self.step = step
-        self.label_text = label
-        self._init_ui(label, min_val, max_val, default_val)
+@dataclass
+class SliderConfig:
+    label: str
+    min_val: float
+    max_val: float
+    default_val: float
+    step: float = 1.0
 
-    def _init_ui(self, label, min_val, max_val, default_val):
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        
-        # Label with current value
-        self.value_label = QLabel()
-        layout.addWidget(self.value_label)
-        
-        # Slider
-        self.slider = QSlider(Qt.Horizontal)
-        self.slider.setMinimum(int(min_val * (1/self.step)))
-        self.slider.setMaximum(int(max_val * (1/self.step)))
-        self.slider.setValue(int(default_val * (1/self.step)))
-        self.slider.valueChanged.connect(self._update_label)
-        layout.addWidget(self.slider)
-        
-        # Set initial label value
+class ParameterSlider(QWidget):
+    def __init__(self, config: SliderConfig, parent=None):
+        super().__init__(parent)
+        self.config = config
+        self._init_ui()
+        self._apply_styling()
+    
+    def _init_ui(self):
+        self._setup_layout()
+        self._setup_label()
+        self._setup_slider()
         self._update_label(self.slider.value())
+    
+    def _setup_layout(self):
+        self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+    
+    def _setup_label(self):
+        self.value_label = QLabel()
+        self.layout.addWidget(self.value_label)
+    
+    def _setup_slider(self):
+        self.slider = QSlider(Qt.Horizontal)
+        self.slider.setMinimum(int(self.config.min_val * (1/self.config.step)))
+        self.slider.setMaximum(int(self.config.max_val * (1/self.config.step)))
+        self.slider.setValue(int(self.config.default_val * (1/self.config.step)))
+        self.slider.valueChanged.connect(self._update_label)
+        self.layout.addWidget(self.slider)
+    
+    def _update_label(self, value):
+        actual_value = value * self.config.step
+        formatted_value = self._format_value(actual_value)
+        self.value_label.setText(f"{self.config.label}: {formatted_value}")
+    
+    def _format_value(self, value):
+        if "Frequency" in self.config.label or "Elements" in self.config.label:
+            return f"{int(value)}"
         
+        if self.config.step >= 1:
+            return f"{value:.0f}"
+        elif self.config.step >= 0.1:
+            return f"{value:.1f}"
+        elif self.config.step >= 0.01:
+            return f"{value:.2f}"
+        return f"{value:.3f}"
+    
+    def value(self):
+        return self.slider.value() * self.config.step
+    
+    def setValue(self, value):
+        self.slider.setValue(int(value * (1/self.config.step)))
+    
+    def setEnabled(self, enabled):
+        super().setEnabled(enabled)
+        self.slider.setEnabled(enabled)
+        self.value_label.setEnabled(enabled)
+    
+    def _apply_styling(self):
         self.setStyleSheet("""
             QLabel {
                 color: white;
@@ -63,35 +104,3 @@ class ParameterSlider(QWidget):
                 border-color: #374151;
             }
         """)
-
-    def _update_label(self, value):
-        actual_value = value * self.step
-        
-        # Determine number of decimal places based on step size
-        if self.step >= 1:
-            formatted_value = f"{actual_value:.0f}"
-        elif self.step >= 0.1:
-            formatted_value = f"{actual_value:.1f}"
-        elif self.step >= 0.01:
-            formatted_value = f"{actual_value:.2f}"
-        else:
-            formatted_value = f"{actual_value:.3f}"
-        
-        # Special formatting for specific parameters
-        if "Frequency" in self.label_text:
-            formatted_value = f"{int(actual_value)}"  
-        elif "Elements" in self.label_text:
-            formatted_value = f"{int(actual_value)}"  
-        
-        self.value_label.setText(f"{self.label_text}: {formatted_value}")
-
-    def value(self):
-        return self.slider.value() * self.step
-
-    def setValue(self, value):
-        self.slider.setValue(int(value * (1/self.step)))
-
-    def setEnabled(self, enabled):
-        super().setEnabled(enabled)
-        self.slider.setEnabled(enabled)
-        self.value_label.setEnabled(enabled)

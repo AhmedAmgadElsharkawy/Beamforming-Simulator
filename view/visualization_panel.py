@@ -65,7 +65,7 @@ class VisualizationPanel(QWidget):
         for name, config in plot_configs.items():
             self._create_plot(name, config)
 
-    def _create_plot(self, name: str, config: PlotConfig):
+    def _create_plot(self, name, config):
         self.figures[name] = plt.figure(figsize=config.figsize, facecolor='#111827')
         self.canvases[name] = FigureCanvas(self.figures[name])
         

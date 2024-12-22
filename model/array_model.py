@@ -27,26 +27,26 @@ class ArrayModel:
         self._params = None
     
     @classmethod
-    def _process_parameters(cls, params) -> ArrayParameters:
+    def _process_parameters(cls, params):
         return ArrayParameters(**params) if isinstance(params, dict) else params
     
-    def calculate_positions(self, params) -> ArrayPositions:
+    def calculate_positions(self, params):
         self._params = self._process_parameters(params)
         return self._calculate_array_positions()
     
-    def _create_zero_array(self) -> ArrayPositions:
+    def _create_zero_array(self):
         return ArrayPositions(
             x=np.zeros(self._params.elements),
             y=np.zeros(self._params.elements)
         )
     
-    def _apply_position_offset(self, x: np.ndarray, y: np.ndarray) -> ArrayPositions:
+    def _apply_position_offset(self, x, y):
         return ArrayPositions(
             x=x + self._params.x_position,
             y=y + self._params.y_position
         )
     
-    def _calculate_array_positions(self) -> ArrayPositions:
+    def _calculate_array_positions(self):
         if self._params.elements <= 0:
             return ArrayPositions(x=np.array([]), y=np.array([]))
             
@@ -54,12 +54,12 @@ class ArrayModel:
                 if self._params.array_type == 'linear' 
                 else self._calculate_curved_positions())
     
-    def _calculate_linear_positions(self) -> ArrayPositions:
+    def _calculate_linear_positions(self):
         x = np.arange(self._params.elements) * self._params.spacing
         y = np.zeros_like(x)
         return self._apply_position_offset(x, y)
     
-    def _calculate_curved_positions(self) -> ArrayPositions:
+    def _calculate_curved_positions(self):
         distance, scale_factor = self._calculate_curved_params()
         if distance == 0 and scale_factor == 0:
             return self._create_zero_array()
@@ -69,7 +69,7 @@ class ArrayModel:
         y = -distance * scale_factor * np.sin(angles)
         return self._apply_position_offset(x, y)
     
-    def _calculate_curved_params(self) -> tuple[float, float]:
+    def _calculate_curved_params(self):
         cos_term = np.cos(2*np.pi/self._params.elements)
         if abs(1 - cos_term) < 1e-10:
             return 0, 0

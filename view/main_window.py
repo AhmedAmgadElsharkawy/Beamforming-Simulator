@@ -56,7 +56,7 @@ class BeamformingSimulator(QMainWindow):
         for slider in sliders:
             slider.slider.valueChanged.connect(self.update_plots)
 
-    def _toggle_parameters(self, array_type: str):
+    def _toggle_parameters(self, array_type):
         is_curved = array_type == "Curved"
         self.parameter_panel.curvature.setEnabled(is_curved)
         self.parameter_panel.spacing.setEnabled(not is_curved)
@@ -77,7 +77,7 @@ class BeamformingSimulator(QMainWindow):
         
         self._update_visualization(params)
 
-    def _update_visualization(self, params: SimulationParameters):
+    def _update_visualization(self, params):
         self.visualization_panel.clear_all_plots()
         self.visualization_panel.update_plots([vars(params)], self.visualization_controller)
         self.visualization_panel.refresh_all_canvases()

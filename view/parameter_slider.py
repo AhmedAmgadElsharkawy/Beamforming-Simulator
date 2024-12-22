@@ -11,7 +11,7 @@ class SliderConfig:
     step: float = 1.0
 
 class ParameterSlider(QWidget):
-    def __init__(self, config: SliderConfig, parent=None):
+    def __init__(self, config, parent=None):
         super().__init__(parent)
         self.config = config
         self._init_ui()

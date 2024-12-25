@@ -2,15 +2,13 @@ from .base_controller import BaseController
 import numpy as np
 import matplotlib.pyplot as plt
 from model.beamforming_model import BeamformingModel
-from model.array_model import ArrayModel
 
 class InterferenceController(BaseController):
     def __init__(self):
         super().__init__()
         self.magnitude_min = -60
         self.magnitude_max = 0
-        array = ArrayModel
-        self.model = BeamformingModel(array)
+        self.model = BeamformingModel()
 
     def _create_colorbar(self, fig, ax, im):
         cax = fig.add_axes([0.92, 0.1, 0.03, 0.8])
@@ -30,12 +28,12 @@ class InterferenceController(BaseController):
     def _setup_interference_plot(self, ax, masked_pattern):
         circle = plt.Circle((0, 0), 10, transform=ax.transData)
         im = ax.imshow(masked_pattern, 
-                      extent=[-10, 10, -10, 10],
-                      origin='lower', 
-                      cmap='coolwarm',
-                      vmin=self.magnitude_min,
-                      vmax=self.magnitude_max,
-                      clip_path=circle)
+                    extent=[-10, 10, -10, 10],
+                    origin='lower', 
+                    cmap='coolwarm',
+                    vmin=self.magnitude_min,
+                    vmax=self.magnitude_max,  # Set to 0 to match pattern scaling
+                    clip_path=circle)
         return im
 
     def _add_interference_labels(self, ax):

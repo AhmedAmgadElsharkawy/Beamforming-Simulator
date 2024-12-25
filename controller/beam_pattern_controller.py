@@ -1,13 +1,11 @@
 from .base_controller import BaseController
 import numpy as np
 from model.beamforming_model import BeamformingModel, BeamformingParameters
-from model.array_model import ArrayModel
 
 class BeamPatternController(BaseController):
     def __init__(self):
         super().__init__()
-        array = ArrayModel
-        self.model = BeamformingModel(array)
+        self.model = BeamformingModel()
         
     def _setup_beam_plot(self, params_list):
         steering_angles = np.linspace(-np.pi/2, np.pi/2, 1000)

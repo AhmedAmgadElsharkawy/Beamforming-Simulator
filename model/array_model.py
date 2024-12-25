@@ -60,7 +60,7 @@ class ArrayModel:
         return self._apply_position_offset(x, y)
     
     def _calculate_curved_positions(self):
-        distance, scale_factor = self._calculate_curved_params()
+        distance, scale_factor = self._calculate_curved_params(self._params.elements, self._params.curvature)
         if distance == 0 and scale_factor == 0:
             return self._create_zero_array()
         
@@ -69,11 +69,12 @@ class ArrayModel:
         y = -distance * scale_factor * np.sin(angles)
         return self._apply_position_offset(x, y)
     
-    def _calculate_curved_params(self):
-        cos_term = np.cos(2*np.pi/self._params.elements)
+    def _calculate_curved_params(self, elements, curvature):
+        cos_term = np.cos(2*np.pi/elements)
+        
         if abs(1 - cos_term) < 1e-10:
             return 0, 0
             
-        distance = np.sqrt(2 * self._params.curvature**2 * (1 - cos_term))
+        distance = np.sqrt(2 * curvature**2 * (1 - cos_term))
         scale_factor = 1.0 / (np.sqrt(2.0) * np.sqrt(1.0 - cos_term))
         return distance, scale_factor

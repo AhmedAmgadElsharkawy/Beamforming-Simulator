@@ -1,5 +1,4 @@
 from PyQt5.QtWidgets import QMainWindow, QWidget, QHBoxLayout
-from PyQt5.QtCore import Qt
 from dataclasses import dataclass
 from controller.visualization_controller import VisualizationController
 from .visualization_panel import VisualizationPanel

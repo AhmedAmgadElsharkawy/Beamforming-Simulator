@@ -5,6 +5,8 @@ class BaseController:
         self.speed_of_light = 3e8
         
     def _calculate_wavelength(self, frequency):
+        if frequency <= 0:
+            frequency = 1
         return self.speed_of_light / (frequency * 1e6)
 
     def _calculate_wavenumber(self, frequency):

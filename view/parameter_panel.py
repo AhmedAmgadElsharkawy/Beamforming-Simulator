@@ -29,7 +29,7 @@ class ParameterPanel(QWidget):
             'spacing': SliderConfig("Spacing (λ)", 0.1, 1.0, 0.5, 0.1),
             'steering': SliderConfig("Steering (°)", -90, 90, 0, 1),
             'curvature': SliderConfig("Curvature", 0.1, 1.0, 0.5, 0.1),
-            'frequency': SliderConfig("Frequency (MHz)", 1, 1000, 100, 10),
+            'frequency': SliderConfig("Frequency (MHz)", 1, 28000, 100, 10),
             'x_position': SliderConfig("X-Position", -10, 10, 0.0, 1),
             'y_position': SliderConfig("Y-Position", -10, 10, 0.0, 1)
         }

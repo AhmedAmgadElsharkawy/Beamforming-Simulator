@@ -16,7 +16,6 @@ class BeamformingParameters:
     y_position: float = 0
 
 
-
 class ArrayStrategy:
     @staticmethod
     def calculate_linear_weights(wave_number, params, steering_angle):

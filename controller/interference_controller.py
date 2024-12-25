@@ -2,6 +2,7 @@ from .base_controller import BaseController
 import numpy as np
 import matplotlib.pyplot as plt
 from model.beamforming_model import BeamformingModel
+from controller.beam_pattern_controller import BeamPatternController
 
 class InterferenceController(BaseController):
     def __init__(self):
@@ -9,6 +10,7 @@ class InterferenceController(BaseController):
         self.magnitude_min = -60
         self.magnitude_max = 0
         self.model = BeamformingModel()
+        self.polar = BeamPatternController()
 
     def _create_colorbar(self, fig, ax, im):
         cax = fig.add_axes([0.92, 0.1, 0.03, 0.8])
@@ -28,8 +30,7 @@ class InterferenceController(BaseController):
     def _setup_interference_plot(self, ax, masked_pattern):
         circle = plt.Circle((0, 0), 10, transform=ax.transData)
         im = ax.imshow(masked_pattern, 
-                    extent=[-10, 10, -10, 10],
-                    origin='lower', 
+                    extent=[-10, 10, -10, 10], 
                     cmap='coolwarm',
                     vmin=self.magnitude_min,
                     vmax=self.magnitude_max,  # Set to 0 to match pattern scaling
@@ -54,9 +55,8 @@ class InterferenceController(BaseController):
         
         converted_params = self._convert_steering_angles(params_list)
         interference_pattern = self.model.calculate_interference_pattern(converted_params)
-        masked_pattern = self._apply_circular_mask(interference_pattern)
-        masked_pattern = np.rot90(masked_pattern)
-        
+        masked_pattern = np.rot90(interference_pattern)
+        masked_pattern = self._apply_circular_mask(masked_pattern)
         im = self._setup_interference_plot(ax, masked_pattern)
         self._create_colorbar(fig, ax, im)
         
@@ -73,7 +73,7 @@ class InterferenceController(BaseController):
         y, x = np.ogrid[-ny//2:ny//2, -nx//2:nx//2]
         
         circle = x*x + y*y <= (min(nx, ny)//2)**2
-        top_half = x <= 0
+        top_half = y <= 0
         mask = circle & top_half
         
         return np.ma.array(pattern, mask=~mask)

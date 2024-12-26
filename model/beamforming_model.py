@@ -25,9 +25,9 @@ class ArrayStrategy:
 
     @staticmethod
     def calculate_curved_weights(wave_number, params, steering_angle):
-        temp_model = BeamformingModel()
-        distance, scale_factor = temp_model._array._calculate_curved_params(params.elements, params.curvature)
-        theta = 2 * np.pi / params.elements * np.arange(params.elements)  # Match steering vector calculation
+        elements = params.elements 
+        distance, scale_factor = ArrayModel()._calculate_curved_params(elements, params.curvature) 
+        theta = 2 * np.pi / elements * np.arange(elements) 
         x = (distance * scale_factor * np.cos(theta)).reshape(-1, 1)
         y = (-distance * scale_factor * np.sin(theta)).reshape(-1, 1)
         steering = np.asarray(steering_angle).reshape(1, -1)
@@ -55,13 +55,14 @@ class BeamformingModel:
         position_phase = wave_number * (params.x_position * np.cos(params.steering) + 
                                     params.y_position * np.sin(params.steering))
         return np.exp(-1j * (array_phase + position_phase + phase))
-
+    
     def calculate_curved_steering_vector(self, wave_number, params, phase):
         distance, scale_factor = self._array._calculate_curved_params(params.elements, params.curvature)
         x = distance * scale_factor * np.cos(2 * np.pi / params.elements * np.arange(params.elements)) + params.x_position
         y = -distance * scale_factor * np.sin(2 * np.pi / params.elements * np.arange(params.elements)) + params.y_position
         steering_vector = np.exp(1j * wave_number * (x * np.cos(params.steering) + y * np.sin(params.steering)))
         return steering_vector.reshape(-1, 1) * np.exp(1j * phase)
+    
     def calculate_weights(self, params, steering_angle):
         wave_number = self.base_controller._calculate_wavenumber(params.frequency)
         if params.array_type == 'linear':

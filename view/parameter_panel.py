@@ -33,30 +33,30 @@ class ParameterPanel(QWidget):
         presets = {
             '5G Communications': {
                 'elements': 64,
-                'spacing': 0.5,
-                'steering': 30.0,
-                'curvature': 1.0,
-                'frequency': 28000.0,
+                'spacing': 0.2,
+                'steering': 0.0,
+                'curvature': 0.0,
+                'frequency': 1000.0,
                 'x_position': 0.0,
                 'y_position': 0.0,
                 'array_type': 'Linear'
             },
             'Medical Ultrasound': {
-                'elements': 128,
-                'spacing': 0.2,
-                'steering': 45.0,
-                'curvature': 0.6,
-                'frequency': 7500.0,
+                'elements': 7,
+                'spacing': 0.5,
+                'steering': 0.0,
+                'curvature': 0.0,
+                'frequency': 300.0,
                 'x_position': 0.0,
                 'y_position': 0.0,
-                'array_type': 'Curved'
+                'array_type': 'Linear'
             },
             'Tumor Ablation': {
-                'elements': 512,
-                'spacing': 0.7,
+                'elements': 23,
+                'spacing': 0.0,
                 'steering': 0.0,
-                'curvature': 0.4,
-                'frequency': 1000.0,
+                'curvature': 2.1,
+                'frequency': 900.0,
                 'x_position': 0.0,
                 'y_position': 0.0,
                 'array_type': 'Curved'
@@ -97,7 +97,7 @@ class ParameterPanel(QWidget):
             'spacing': SliderConfig("Spacing (λ)", 0.1, 5.0, 0.5, 0.1),
             'steering': SliderConfig("Steering (°)", -90, 90, 0, 1),
             'curvature': SliderConfig("Curvature", 0.1, 5.0, 1.0, 0.1),
-            'frequency': SliderConfig("Frequency (MHz)", 1, 30000, 300, 10),
+            'frequency': SliderConfig("Frequency (MHz)", 1, 1000, 300, 10),
             'x_position': SliderConfig("X-Position", -10, 10, 0.0, 1),
             'y_position': SliderConfig("Y-Position", -10, 10, 0.0, 1)
         }

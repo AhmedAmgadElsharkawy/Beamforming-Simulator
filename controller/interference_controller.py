@@ -33,7 +33,7 @@ class InterferenceController(BaseController):
                     extent=[-10, 10, -10, 10], 
                     cmap='coolwarm',
                     vmin=self.magnitude_min,
-                    vmax=self.magnitude_max,  # Set to 0 to match pattern scaling
+                    vmax=self.magnitude_max,  
                     clip_path=circle)
         return im
 
@@ -53,9 +53,9 @@ class InterferenceController(BaseController):
         
         self._clear_existing_colorbars(fig, ax)
         
-        converted_params = self._convert_steering_angles(params_list)
-        interference_pattern = self.model.calculate_interference_pattern(converted_params)
-        masked_pattern = np.rot90(interference_pattern)
+        converted_params = self.convert_steering_angles(params_list)
+        interference_pattern = self.model.calculate_interference_map(converted_params)
+        masked_pattern = np.rot90(interference_pattern, k=1, axes=(0,1))
         masked_pattern = self._apply_circular_mask(masked_pattern)
         im = self._setup_interference_plot(ax, masked_pattern)
         self._create_colorbar(fig, ax, im)

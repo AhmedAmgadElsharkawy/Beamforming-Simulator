@@ -1,21 +1,41 @@
 from .base_controller import BaseController
 import numpy as np
 from model.beamforming_model import BeamformingModel, BeamformingParameters
+from model.array_model import ArrayModel
 
 class BeamPatternController(BaseController):
     def __init__(self):
         super().__init__()
         self.model = BeamformingModel()
+        self.array_model = ArrayModel()
+        
+        
+    # def _setup_beam_plot_polar(self, params_list):
+    #     # Calculate steering angles for curved array geometry
+    #     distance, scale_factor = self.array_model.calculate_curved_params(params_list.elements, params_list.curvature)
+    #     steering_angles = np.linspace(-np.pi/2, np.pi/2, 1000) * scale_factor
+        
+    #     converted_params = self.convert_steering_angles(params_list)
+    #     params = BeamformingParameters(**converted_params[0])
+    #     return steering_angles, self.model.calculate_pattern(params)
+
+    # def plot_curved_beam(self, ax, params_list):
+    #     ax.clear()
+    #     steering_angles, beam_pattern = self._setup_beam_plot_polar(params_list)
+    #     distance, scale_factor = self.array_model.calculate_curved_params(params_list.elements, params_list.curvature)
+    #     # Adjust x-axis limits and tick values for curved array geometry
+    #     ax.set_xlim(-10 * scale_factor, 10 * scale_factor)
+    #     ax.plot(steering_angles*180/np.pi, beam_pattern)
+    #     ax.set_xlabel('Theta [Degrees]', color='white')
+    #     ax.set_ylabel('Beam Pattern [dB]', color='white')
+    #     ax.set_xticks(np.arange(-90 * scale_factor, 91 * scale_factor, 20 * scale_factor))
+    #     self._style_plot_axes(ax, 'Curved Beam Pattern')
         
     def _setup_beam_plot(self, params_list):
-        steering_angles = np.linspace(-np.pi/2, np.pi/2, 1000)
-        converted_params = self._convert_steering_angles(params_list)
+        steering_angles = np.linspace(-np.pi/2, np.pi/2, 1000) 
+        converted_params = self.convert_steering_angles(params_list)
         params = BeamformingParameters(**converted_params[0])
-        return steering_angles, self.model.calculate_pattern(
-            params, 
-            steering_angles, 
-            use_phase=True
-        )
+        return steering_angles, self.model.calculate_pattern(params)
     
     def _style_plot_axes(self, ax, title, is_polar=False):
         ax.grid(True, color="gray")
@@ -24,7 +44,7 @@ class BeamPatternController(BaseController):
         
     def plot_rectangular_beam(self, ax, params_list):
         ax.clear()
-        steering_angles, beam_pattern = self._setup_beam_plot(params_list)
+        steering_angles, beam_pattern = self._setup_beam_plot(params_list) 
         
         ax.set_xlim(-10, 10)
         ax.plot(steering_angles*180/np.pi, beam_pattern)

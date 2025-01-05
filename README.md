@@ -1,5 +1,5 @@
 # Beamforming-Simulator
-An interactive tool for customizing and visualizing beamforming parameters, phased array geometries, and interference patterns, with scenarios inspired by 5G, ultrasound, and tumor ablation.
+Beamforming-Simulator is a 2D beamforming simulator that allows users to customize system parameters such as transmitter/receiver configurations, delays, and frequencies in real-time. It provides a dynamic environment to visualize constructive and destructive interference patterns, supporting multiple phased array units and scenarios inspired by 5G, Ultrasound, and tumor ablation.
 
 <div align = "center">
     <img src = "assets/images/app_preview.png">

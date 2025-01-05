@@ -48,8 +48,8 @@ An interactive tool for customizing and visualizing beamforming parameters, phas
 - **Pre-configured Scenarios**: Load and explore at least three different scenarios inspired by real-world applications such as 5G, Ultrasound, and tumor ablation. Users can visualize and fine-tune the parameters of each scenario.
 
 ## Contributors
+- **RawanAhmed444**: [GitHub Profile](https://github.com/RawanAhmed444)
+- **MohamadAhmedAli**: [GitHub Profile](https://github.com/MohamadAhmedAli)
 - **AhmedAmgadElsharkawy**: [GitHub Profile](https://github.com/AhmedAmgadElsharkawy)
 - **AbdullahMahmoudHanafy**: [GitHub Profile](https://github.com/AbdullahMahmoudHanafy)
-- **Mohamed-185**: [GitHub Profile](https://github.com/Mohamed-185)
-- **RawanAhmed444**: [GitHub Profile](https://github.com/RawanAhmed444)
 

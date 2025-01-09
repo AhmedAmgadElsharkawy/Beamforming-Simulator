@@ -9,8 +9,8 @@ class BaseController:
             frequency = 1
         return self.speed_of_light / (frequency * 1e6)
 
-    def calculate_wavenumber(self, frequency):
+    def _calculate_wavenumber(self, frequency):
         return 2 * np.pi / self._calculate_wavelength(frequency)
 
-    def convert_steering_angles(self, params_list):
+    def _convert_steering_angles(self, params_list):
         return [{**params, 'steering': np.deg2rad(params['steering'])} for params in params_list]

@@ -43,23 +43,23 @@ class ParameterPanel(QWidget):
             },
             'Medical Ultrasound': {
                 'elements': 7,
-                'spacing': 0.5,
+                'spacing': 10.0,
                 'steering': 0.0,
                 'curvature': 0.0,
-                'frequency': 300.0,
+                'frequency': 10.0,
                 'x_position': 0.0,
                 'y_position': 0.0,
                 'array_type': 'Linear'
             },
             'Tumor Ablation': {
-                'elements': 23,
+                'elements': 98,
                 'spacing': 0.0,
                 'steering': 0.0,
                 'curvature': 2.1,
                 'frequency': 900.0,
                 'x_position': 0.0,
                 'y_position': 0.0,
-                'array_type': 'Curved'
+                'array_type': 'Linear'
             }
         }
         
@@ -93,8 +93,8 @@ class ParameterPanel(QWidget):
     
     def _setup_sliders(self):
         slider_configs = {
-            'elements': SliderConfig("Elements", 1, 512, 16, 1),
-            'spacing': SliderConfig("Spacing (λ)", 0.1, 5.0, 0.5, 0.1),
+            'elements': SliderConfig("Elements", 2, 100, 16, 1),
+            'spacing': SliderConfig("Spacing (λ)", 0.1, 10.0, 0.5, 0.1),
             'steering': SliderConfig("Steering (°)", -90, 90, 0, 1),
             'curvature': SliderConfig("Curvature", 0.1, 5.0, 1.0, 0.1),
             'frequency': SliderConfig("Frequency (MHz)", 1, 1000, 300, 10),
